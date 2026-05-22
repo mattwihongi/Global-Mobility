@@ -1,0 +1,750 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Global Mobility Assistant · Chargebee</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Syne:wght@400;500;600;700;800&family=DM+Sans:ital,wght@0,300;0,400;0,500;1,300&display=swap" rel="stylesheet">
+<style>
+*, *::before, *::after { box-sizing: border-box; margin: 0; padding: 0; }
+
+:root {
+  --ink: #0C1220;
+  --ink-80: rgba(12,18,32,0.8);
+  --ink-40: rgba(12,18,32,0.4);
+  --ink-12: rgba(12,18,32,0.12);
+  --ink-06: rgba(12,18,32,0.06);
+  --cb-orange: #FF6B35;
+  --cb-orange-soft: rgba(255,107,53,0.1);
+  --cb-teal: #00B4A0;
+  --cb-teal-soft: rgba(0,180,160,0.1);
+  --surface: #FAFAF8;
+  --surface-2: #F3F2EE;
+  --white: #FFFFFF;
+  --border: rgba(12,18,32,0.1);
+  --border-strong: rgba(12,18,32,0.18);
+  --shadow-sm: 0 1px 3px rgba(12,18,32,0.08);
+  --shadow: 0 4px 16px rgba(12,18,32,0.1), 0 1px 4px rgba(12,18,32,0.06);
+  --shadow-lg: 0 16px 48px rgba(12,18,32,0.14), 0 4px 12px rgba(12,18,32,0.08);
+  --radius: 16px;
+  --radius-sm: 10px;
+}
+
+html, body { height: 100%; }
+
+body {
+  font-family: 'DM Sans', sans-serif;
+  background: var(--surface);
+  color: var(--ink);
+  display: flex;
+  flex-direction: column;
+  height: 100vh;
+  overflow: hidden;
+}
+
+/* ─── HEADER ─── */
+.topbar {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  padding: 0 28px;
+  height: 64px;
+  background: var(--ink);
+  flex-shrink: 0;
+  position: relative;
+  overflow: hidden;
+}
+.topbar::after {
+  content: '';
+  position: absolute;
+  right: -60px; top: -60px;
+  width: 200px; height: 200px;
+  border-radius: 50%;
+  background: radial-gradient(circle, rgba(255,107,53,0.18), transparent 70%);
+  pointer-events: none;
+}
+.topbar-left { display: flex; align-items: center; gap: 14px; z-index: 1; }
+.logo-mark {
+  width: 38px; height: 38px; border-radius: 10px;
+  background: linear-gradient(135deg, var(--cb-orange), #E84F1D);
+  display: flex; align-items: center; justify-content: center;
+  box-shadow: 0 2px 12px rgba(255,107,53,0.4);
+}
+.logo-mark svg { width: 20px; height: 20px; }
+.topbar-titles {}
+.topbar-name {
+  font-family: 'Syne', sans-serif;
+  font-size: 14px; font-weight: 700;
+  color: white; letter-spacing: -0.01em;
+}
+.topbar-sub { font-size: 11px; color: rgba(255,255,255,0.45); font-weight: 300; margin-top: 1px; }
+.topbar-right { display: flex; align-items: center; gap: 8px; z-index: 1; }
+.status-pill {
+  display: flex; align-items: center; gap: 6px;
+  padding: 5px 12px;
+  background: rgba(255,255,255,0.07);
+  border: 1px solid rgba(255,255,255,0.12);
+  border-radius: 20px;
+  font-size: 11.5px; color: rgba(255,255,255,0.55);
+  font-family: 'DM Sans', sans-serif;
+}
+.dot { width: 6px; height: 6px; border-radius: 50%; background: #22C55E; }
+.dot.pulse { animation: pulse-dot 2s infinite; }
+@keyframes pulse-dot {
+  0%, 100% { box-shadow: 0 0 0 0 rgba(34,197,94,0.5); }
+  50% { box-shadow: 0 0 0 4px rgba(34,197,94,0); }
+}
+
+/* ─── MAIN LAYOUT ─── */
+.shell { display: flex; flex: 1; overflow: hidden; }
+
+/* ─── SIDEBAR ─── */
+.sidebar {
+  width: 248px; flex-shrink: 0;
+  background: var(--white);
+  border-right: 1px solid var(--border);
+  display: flex; flex-direction: column;
+  overflow: hidden;
+}
+.sidebar-section-label {
+  padding: 20px 18px 10px;
+  font-family: 'Syne', sans-serif;
+  font-size: 10px; font-weight: 700;
+  letter-spacing: 0.1em;
+  text-transform: uppercase;
+  color: var(--ink-40);
+}
+.topic-scroller { flex: 1; overflow-y: auto; padding: 0 10px 12px; }
+.topic-scroller::-webkit-scrollbar { width: 4px; }
+.topic-scroller::-webkit-scrollbar-track { background: transparent; }
+.topic-scroller::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 4px; }
+
+.topic-item {
+  display: flex; align-items: flex-start; gap: 10px;
+  padding: 9px 10px; border-radius: var(--radius-sm);
+  cursor: pointer; border: none; background: none;
+  width: 100%; text-align: left;
+  transition: background 0.15s;
+  margin-bottom: 1px;
+}
+.topic-item:hover { background: var(--surface); }
+.topic-item.active { background: var(--cb-orange-soft); }
+.topic-item.active .topic-item-label { color: var(--cb-orange); }
+.topic-dot {
+  width: 7px; height: 7px; border-radius: 50%;
+  background: var(--ink-12); flex-shrink: 0; margin-top: 5px;
+  transition: background 0.15s;
+}
+.topic-item.active .topic-dot { background: var(--cb-orange); }
+.topic-item-label {
+  font-size: 13px; font-weight: 400; color: var(--ink-80);
+  line-height: 1.4;
+}
+
+.sidebar-footer {
+  padding: 14px 18px;
+  border-top: 1px solid var(--border);
+  font-size: 11.5px; color: var(--ink-40); line-height: 1.6;
+}
+.sidebar-footer strong { color: var(--ink-80); font-weight: 500; }
+
+/* ─── CHAT AREA ─── */
+.chat-wrap {
+  flex: 1; display: flex; flex-direction: column; overflow: hidden;
+  position: relative;
+}
+
+/* Subtle grid background */
+.chat-bg {
+  position: absolute; inset: 0; pointer-events: none;
+  background-image:
+    linear-gradient(var(--ink-06) 1px, transparent 1px),
+    linear-gradient(90deg, var(--ink-06) 1px, transparent 1px);
+  background-size: 32px 32px;
+  mask-image: linear-gradient(to bottom, transparent 0%, rgba(0,0,0,0.3) 20%, rgba(0,0,0,0.3) 80%, transparent 100%);
+}
+
+.messages {
+  flex: 1; overflow-y: auto; padding: 28px 32px;
+  display: flex; flex-direction: column; gap: 20px;
+  position: relative; z-index: 1;
+}
+.messages::-webkit-scrollbar { width: 5px; }
+.messages::-webkit-scrollbar-track { background: transparent; }
+.messages::-webkit-scrollbar-thumb { background: var(--border-strong); border-radius: 4px; }
+
+/* ─── WELCOME STATE ─── */
+.welcome-pane {
+  max-width: 540px; margin: auto;
+  display: flex; flex-direction: column; gap: 20px;
+  padding: 12px 0;
+  animation: fade-up 0.4s ease both;
+}
+@keyframes fade-up {
+  from { opacity: 0; transform: translateY(16px); }
+  to { opacity: 1; transform: translateY(0); }
+}
+.welcome-hero {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 20px;
+  padding: 28px;
+  box-shadow: var(--shadow);
+}
+.welcome-icon {
+  width: 48px; height: 48px; border-radius: 14px;
+  background: linear-gradient(135deg, var(--cb-orange), #E84F1D);
+  display: flex; align-items: center; justify-content: center;
+  margin-bottom: 16px;
+  box-shadow: 0 4px 16px rgba(255,107,53,0.3);
+}
+.welcome-icon svg { width: 26px; height: 26px; }
+.welcome-h1 {
+  font-family: 'Syne', sans-serif;
+  font-size: 22px; font-weight: 800;
+  color: var(--ink); line-height: 1.2;
+  letter-spacing: -0.02em; margin-bottom: 8px;
+}
+.welcome-body {
+  font-size: 14px; color: var(--ink-80);
+  line-height: 1.7; font-weight: 300;
+}
+.welcome-tags-label {
+  font-family: 'Syne', sans-serif;
+  font-size: 10px; font-weight: 700; letter-spacing: 0.1em;
+  text-transform: uppercase; color: var(--ink-40);
+  margin-bottom: 10px;
+}
+.welcome-tags { display: flex; flex-wrap: wrap; gap: 7px; }
+.welcome-tag {
+  padding: 6px 13px;
+  border-radius: 20px;
+  border: 1px solid var(--border);
+  background: var(--white);
+  font-size: 12.5px; color: var(--ink-80);
+  cursor: pointer; font-family: 'DM Sans', sans-serif;
+  transition: all 0.15s;
+}
+.welcome-tag:hover {
+  border-color: var(--cb-orange);
+  color: var(--cb-orange);
+  background: var(--cb-orange-soft);
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(255,107,53,0.15);
+}
+
+/* ─── MESSAGES ─── */
+.msg-row {
+  display: flex; gap: 12px;
+  animation: fade-up 0.3s ease both;
+}
+.msg-row.user { flex-direction: row-reverse; }
+
+.avatar {
+  width: 32px; height: 32px; border-radius: 50%; flex-shrink: 0;
+  display: flex; align-items: center; justify-content: center;
+  font-family: 'Syne', sans-serif;
+  font-size: 11px; font-weight: 700; margin-top: 2px;
+}
+.msg-row.bot .avatar {
+  background: linear-gradient(135deg, var(--cb-orange), #E84F1D);
+  color: white;
+  box-shadow: 0 2px 8px rgba(255,107,53,0.3);
+}
+.msg-row.user .avatar { background: var(--surface-2); color: var(--ink-80); }
+
+.bubble {
+  max-width: 72%;
+  padding: 13px 17px;
+  border-radius: 18px;
+  font-size: 14px; line-height: 1.7;
+  font-weight: 300;
+}
+.msg-row.bot .bubble {
+  background: var(--white);
+  border: 1px solid var(--border);
+  border-radius: 4px 18px 18px 18px;
+  box-shadow: var(--shadow-sm);
+  color: var(--ink);
+}
+.msg-row.user .bubble {
+  background: var(--ink);
+  color: white;
+  border-radius: 18px 4px 18px 18px;
+}
+.bubble strong { font-weight: 600; }
+.bubble p { margin-bottom: 8px; }
+.bubble p:last-child { margin-bottom: 0; }
+.bubble ul, .bubble ol { padding-left: 20px; margin: 6px 0; }
+.bubble li { margin-bottom: 5px; }
+.bubble code {
+  font-family: 'SF Mono', 'Fira Code', monospace;
+  font-size: 12px;
+  background: var(--surface-2); padding: 1px 5px;
+  border-radius: 4px; color: var(--cb-orange);
+}
+
+/* ─── TYPING INDICATOR ─── */
+.typing-bubble {
+  display: flex; gap: 5px; align-items: center;
+  padding: 14px 18px;
+}
+.typing-dot {
+  width: 8px; height: 8px; border-radius: 50%;
+  background: var(--border-strong);
+  animation: typing 1.4s infinite ease-in-out;
+}
+.typing-dot:nth-child(2) { animation-delay: 0.2s; }
+.typing-dot:nth-child(3) { animation-delay: 0.4s; }
+@keyframes typing {
+  0%, 80%, 100% { transform: scale(0.8); opacity: 0.5; }
+  40% { transform: scale(1.1); opacity: 1; }
+}
+
+/* ─── INPUT BAR ─── */
+.input-dock {
+  padding: 16px 32px 20px;
+  background: var(--white);
+  border-top: 1px solid var(--border);
+  position: relative; z-index: 2;
+}
+.input-inner {
+  display: flex; align-items: flex-end; gap: 10px;
+  background: var(--surface);
+  border: 1.5px solid var(--border);
+  border-radius: 14px;
+  padding: 8px 8px 8px 16px;
+  transition: border-color 0.15s, box-shadow 0.15s;
+}
+.input-inner:focus-within {
+  border-color: var(--cb-orange);
+  box-shadow: 0 0 0 3px rgba(255,107,53,0.1);
+  background: var(--white);
+}
+.chat-textarea {
+  flex: 1; resize: none; border: none; background: transparent;
+  font-family: 'DM Sans', sans-serif;
+  font-size: 14px; font-weight: 300;
+  color: var(--ink); outline: none;
+  line-height: 1.6; max-height: 120px;
+  padding: 4px 0;
+}
+.chat-textarea::placeholder { color: var(--ink-40); }
+.send-btn {
+  width: 38px; height: 38px; border-radius: 10px;
+  background: var(--ink); border: none; cursor: pointer;
+  display: flex; align-items: center; justify-content: center;
+  flex-shrink: 0; transition: all 0.15s;
+}
+.send-btn:hover:not(:disabled) {
+  background: var(--cb-orange);
+  transform: translateY(-1px);
+  box-shadow: 0 4px 12px rgba(255,107,53,0.35);
+}
+.send-btn:disabled { opacity: 0.35; cursor: not-allowed; }
+.send-btn svg { width: 17px; height: 17px; stroke: white; fill: none; stroke-width: 2.2; }
+.input-hint {
+  font-size: 11px; color: var(--ink-40); margin-top: 8px;
+  text-align: center; font-weight: 300;
+}
+</style>
+</head>
+<body>
+
+<!-- HEADER -->
+<header class="topbar">
+  <div class="topbar-left">
+    <div class="logo-mark">
+      <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2">
+        <circle cx="12" cy="12" r="10"/>
+        <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+      </svg>
+    </div>
+    <div class="topbar-titles">
+      <div class="topbar-name">Global Mobility Assistant</div>
+      <div class="topbar-sub">Chargebee People Operations</div>
+    </div>
+  </div>
+  <div class="topbar-right">
+    <div class="status-pill">
+      <div class="dot pulse"></div>
+      Live · Powered by Claude
+    </div>
+  </div>
+</header>
+
+<!-- SHELL -->
+<div class="shell">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sidebar-section-label">Quick Topics</div>
+    <div class="topic-scroller" id="topic-scroller"></div>
+    <div class="sidebar-footer">
+      <strong>Internal use only.</strong><br>
+      Policy questions, immigration guidance, and relocation support for Chargebee People Ops.
+    </div>
+  </aside>
+
+  <!-- CHAT -->
+  <div class="chat-wrap">
+    <div class="chat-bg"></div>
+
+    <div class="messages" id="messages">
+      <!-- Welcome pane rendered by JS -->
+    </div>
+
+    <div class="input-dock">
+      <div class="input-inner">
+        <textarea
+          class="chat-textarea"
+          id="chat-input"
+          rows="1"
+          placeholder="Ask about relocation packages, visas, approvals, comp mapping…"
+        ></textarea>
+        <button class="send-btn" id="send-btn" onclick="handleSend()">
+          <svg viewBox="0 0 24 24"><path d="M22 2L11 13M22 2l-7 20-4-9-9-4 20-7z"/></svg>
+        </button>
+      </div>
+      <div class="input-hint">Enter to send · Shift+Enter for new line</div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// ─── KNOWLEDGE BASE ───────────────────────────────────────────────────────────
+const SYSTEM = `You are the Chargebee Global Mobility Assistant — an expert, friendly HR specialist embedded in Chargebee's People Operations team. You answer questions based strictly on the internal relocation policy and procedure document below. Be concise, warm, and professional. Use bullet points for lists and bold for key terms/figures.
+
+CRITICAL RULE: Always emphasise that compensation changes must NOT be communicated to employees before both Finance and Department Head have given written sign-off.
+
+If a question falls outside the scope of this document, say so clearly and suggest a related topic you CAN help with.
+
+─── POLICY DOCUMENT ────────────────────────────────────────────────────────────
+
+OVERVIEW
+Chargebee's global mobility programme covers U.S. (via Maggio & Kattar) and future Ireland processes.
+Total phases: 11 | U.S. partner: Maggio & Kattar | Doc prep timeline: 1–2 weeks | Final signatory: Denis (CLO)
+
+GLOBAL RELOCATION STANDARDS — CORE OBJECTIVES
+1. Attracting & retaining talent — financial and logistical support to attract/retain people.
+2. Enhancing employee experience — reduces stress; housing, transportation, visa, family support. Relocating employees should be placed near Bethesda or Lehi populations for collaboration.
+3. Maximising productivity — well-supported move = faster ramp, better engagement.
+4. Supporting global mobility — flexibility and global collaboration.
+5. Compliance — immigration, labour laws, tax.
+6. Cost efficiency — feasible for employees, lower risk for company.
+
+ELIGIBLE RELOCATION LOCATIONS
+Approved: Dublin (Ireland), Washington DC / Bethesda, Utah (Lehi), India.
+Under review (no decision yet): Amsterdam, Sydney.
+
+TRANSFER TYPES
+- Business Initiated: Company identifies strategic need (market expansion, skill gap, major project). Driven by org goals.
+- Employee Initiated: Employee requests relocation for personal/career reasons. Evaluated on business need, impact, and org alignment.
+
+CHARGEBEE SUPPORT BY TYPE
+Business initiated: Immigration & work authorization, compensation adjustment (if needed), initial accommodation, relocation allowance, travel to new location, annual home-country air tickets (capped), repayment terms (TBD — not yet finalised, do not communicate to employees).
+Employee initiated: Immigration & work authorization, compensation adjustment (if needed), EOR for work auth and payroll at non-entity locations, repayment terms (TBD — not yet finalised).
+
+STANDARD RELOCATION PACKAGE (Business Initiated)
+Total: $15,000 per employee
+- $10,000 relocation allowance — shipping, house deposits, other move costs
+- $5,000 flights & temporary housing — travel to new location + 2–4 weeks temporary accommodation
+Applies uniformly across IC, Mid-level/Manager, Senior-level/Director.
+
+COMPENSATION MAPPING
+- Local PSBP works with Reward team on bandings in new location.
+- India → US/EMEA: target P25 bandings.
+- Comp splits align to local market standard (e.g. 50/50 for Sales in EMEA).
+- Temporary assignments: salary reviewed on repatriation to re-align with local market.
+- PSBP seeks approval from Department Head + Finance.
+⚠️ All compensation changes must be approved by BOTH the Department Head AND Finance before being communicated to the employee — no exceptions.
+
+APPROVAL CHAIN (in order)
+1. CXO — exploratory phase approval
+2. FP&A — cost approval
+3. HR/Finance Leadership (Denise/Mike) — sign-off
+Comp adjustments also need Department Head + Finance sign-off before any communication to the employee.
+
+U.S. IMMIGRATION PROCESS — via Maggio & Kattar (11 phases)
+
+Phase 1 — Initial Request & CXO Approval
+Business Leader emails CXO requesting exploratory approval. Once approved → schedule Kickoff Call.
+Parties: Business Leader, CXO, HRBP.
+
+Phase 2 — Kickoff Call: Business Case Review
+Validate rationale: Why is Chargebee initiating? What outcomes are expected?
+
+Phase 3 — HRBP Assessment & Relocation Package Approval
+HRBP completes Relocation Review Template with Total Rewards, FP&A, and Business Leader.
+Approval chain: CXO → FP&A → HR/Finance Leadership (Denise/Mike).
+Package: $10k relocation allowance + $5k flights & temp housing = $15k total.
+HRBP should also provide feasibility and risk assessment.
+
+Phase 4 — Immigration Process Initiation
+HRBP contacts regional immigration partner.
+- US → Maggio process (below)
+- Ireland → process TBD (placeholder)
+
+Phase 5.1 — Intake Form Submission
+Complete Maggio Standard Intake Form, attach employee resume and job description, submit to Maggio.
+
+Phase 5.2 — Eligibility & Viability Assessment
+Visa categories: L1A (manager/executive level) | L1B (specialized knowledge).
+If eligible: Chargebee HR provides formal email approval to Maggio to proceed.
+
+Phase 5.3 — Kickoff Call with Maggio
+Maggio schedules and leads kickoff call. Attendees: Employee, Manager, HR Team.
+
+Phase 6 — Documentation & Petition Preparation
+Employee questionnaire: personal details, employment history, background.
+Employer questionnaire: compensation, org structure, reporting lines.
+
+Phase 7 — Legal Documentation Drafting & Review (1–2 weeks)
+Maggio prepares: Support Letter, Form I-129, DS-160, G-28.
+Review flow: HR + Legal (Alyssa) → Manager → consolidate edits → return to Maggio → Maggio finalises → Denis (CLO) signs → HR uploads signed docs to Maggio portal.
+Timeline: up to 2 weeks from receipt of completed questionnaires.
+
+Phase 8 — Visa Appointment Scheduling
+Maggio authorises employee to schedule biometrics appointment and consulate interview.
+
+Phase 9 — Interview Preparation
+- Interview expectations: what to expect, typical questions, demeanour guidance.
+- Required documentation checklist for appointments.
+- Q&A session: employee and manager with Maggio.
+
+IRELAND PROCESS
+Placeholder only — immigration partner and process steps not yet defined. Will follow same structure as U.S. (Maggio) once confirmed.
+
+─── END OF POLICY DOCUMENT ─────────────────────────────────────────────────────`;
+
+const TOPICS = [
+  { label: "Eligible locations", q: "What are the eligible relocation locations?" },
+  { label: "Transfer types", q: "What's the difference between business-initiated and employee-initiated transfers?" },
+  { label: "Relocation package", q: "What does the standard relocation package include?" },
+  { label: "US immigration process", q: "Walk me through the full US immigration process via Maggio & Kattar." },
+  { label: "Visa types (L1A / L1B)", q: "What visa types are used and when does each apply?" },
+  { label: "Approval chain", q: "What is the full approval chain for a relocation?" },
+  { label: "Compensation mapping", q: "How does compensation mapping work for relocations?" },
+  { label: "Document preparation", q: "What documents does Maggio prepare and what's the review process?" },
+  { label: "Interview prep", q: "What interview preparation does Maggio provide?" },
+  { label: "Ireland process", q: "What is the Ireland relocation process?" },
+  { label: "Employee-initiated support", q: "What support does Chargebee offer for employee-initiated relocations?" },
+];
+
+const WELCOME_CHIPS = [
+  "Relocation package value",
+  "US visa types",
+  "Approval chain",
+  "Compensation mapping",
+  "Eligible locations",
+  "Maggio & Kattar process",
+];
+
+// ─── STATE ────────────────────────────────────────────────────────────────────
+let history = [];
+let isLoading = false;
+
+// ─── INIT ─────────────────────────────────────────────────────────────────────
+function init() {
+  renderSidebar();
+  renderWelcome();
+
+  const ta = document.getElementById('chat-input');
+  ta.addEventListener('input', function() {
+    this.style.height = 'auto';
+    this.style.height = Math.min(this.scrollHeight, 120) + 'px';
+  });
+  ta.addEventListener('keydown', function(e) {
+    if (e.key === 'Enter' && !e.shiftKey) {
+      e.preventDefault();
+      handleSend();
+    }
+  });
+}
+
+function renderSidebar() {
+  const scroller = document.getElementById('topic-scroller');
+  TOPICS.forEach(t => {
+    const btn = document.createElement('button');
+    btn.className = 'topic-item';
+    btn.innerHTML = `<div class="topic-dot"></div><div class="topic-item-label">${t.label}</div>`;
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.topic-item').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      triggerQuestion(t.q);
+    });
+    scroller.appendChild(btn);
+  });
+}
+
+function renderWelcome() {
+  const msgs = document.getElementById('messages');
+  const pane = document.createElement('div');
+  pane.className = 'welcome-pane';
+  pane.id = 'welcome-pane';
+  pane.innerHTML = `
+    <div class="welcome-hero">
+      <div class="welcome-icon">
+        <svg viewBox="0 0 24 24" fill="none" stroke="white" stroke-width="2.2">
+          <circle cx="12" cy="12" r="10"/>
+          <path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/>
+        </svg>
+      </div>
+      <div class="welcome-h1">Global Mobility<br>Assistant</div>
+      <div class="welcome-body">
+        I'm your internal guide for all things relocation at Chargebee — packages, visa processes, approval chains, compensation mapping, and more. Ask me anything or pick a topic to start.
+      </div>
+    </div>
+    <div>
+      <div class="welcome-tags-label">Suggested questions</div>
+      <div class="welcome-tags" id="welcome-tags"></div>
+    </div>
+  `;
+  msgs.appendChild(pane);
+
+  const tagsEl = pane.querySelector('#welcome-tags');
+  WELCOME_CHIPS.forEach(label => {
+    const chip = document.createElement('button');
+    chip.className = 'welcome-tag';
+    chip.textContent = label;
+    chip.addEventListener('click', () => triggerQuestion(label));
+    tagsEl.appendChild(chip);
+  });
+}
+
+// ─── MESSAGING ────────────────────────────────────────────────────────────────
+function dismissWelcome() {
+  const pane = document.getElementById('welcome-pane');
+  if (pane) pane.remove();
+}
+
+function triggerQuestion(q) {
+  dismissWelcome();
+  sendMessage(q);
+}
+
+function handleSend() {
+  const ta = document.getElementById('chat-input');
+  const text = ta.value.trim();
+  if (!text || isLoading) return;
+  ta.value = '';
+  ta.style.height = 'auto';
+  dismissWelcome();
+  sendMessage(text);
+}
+
+function addBubble(text, role, isHtml = false) {
+  const msgs = document.getElementById('messages');
+  const row = document.createElement('div');
+  row.className = `msg-row ${role}`;
+  const av = document.createElement('div');
+  av.className = 'avatar';
+  av.textContent = role === 'bot' ? 'CB' : 'You';
+  const bub = document.createElement('div');
+  bub.className = 'bubble';
+  if (isHtml) bub.innerHTML = text;
+  else bub.textContent = text;
+  row.appendChild(av);
+  row.appendChild(bub);
+  msgs.appendChild(row);
+  msgs.scrollTop = msgs.scrollHeight;
+  return row;
+}
+
+function addTyping() {
+  const msgs = document.getElementById('messages');
+  const row = document.createElement('div');
+  row.className = 'msg-row bot';
+  row.id = 'typing-row';
+  const av = document.createElement('div');
+  av.className = 'avatar';
+  av.textContent = 'CB';
+  const bub = document.createElement('div');
+  bub.className = 'bubble';
+  bub.innerHTML = `<div class="typing-bubble"><div class="typing-dot"></div><div class="typing-dot"></div><div class="typing-dot"></div></div>`;
+  row.appendChild(av);
+  row.appendChild(bub);
+  msgs.appendChild(row);
+  msgs.scrollTop = msgs.scrollHeight;
+  return row;
+}
+
+function formatReply(text) {
+  // Strip markdown headings (###, ##, #)
+  text = text.replace(/^#{1,3}\s+(.+)$/gm, '<strong>$1</strong>');
+  // Bold
+  text = text.replace(/\*\*(.*?)\*\*/g, '<strong>$1</strong>');
+  // Bullet lines
+  const lines = text.split('\n');
+  let out = '';
+  let inList = false;
+  for (let line of lines) {
+    const isBullet = /^[-•]\s+/.test(line);
+    if (isBullet) {
+      if (!inList) { out += '<ul>'; inList = true; }
+      out += `<li>${line.replace(/^[-•]\s+/, '')}</li>`;
+    } else {
+      if (inList) { out += '</ul>'; inList = false; }
+      if (line.trim() === '') {
+        out += '</p><p>';
+      } else {
+        out += line;
+      }
+    }
+  }
+  if (inList) out += '</ul>';
+  out = `<p>${out}</p>`;
+  out = out.replace(/<p><\/p>/g, '').replace(/<p>\s*<\/p>/g, '');
+  return out;
+}
+
+async function sendMessage(userText) {
+  if (isLoading) return;
+  isLoading = true;
+  document.getElementById('send-btn').disabled = true;
+
+  addBubble(userText, 'user');
+  history.push({ role: 'user', content: userText });
+
+  const typingEl = addTyping();
+
+  try {
+    const res = await fetch('https://api.anthropic.com/v1/messages', {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        model: 'claude-sonnet-4-20250514',
+        max_tokens: 1000,
+        system: SYSTEM,
+        messages: history
+      })
+    });
+
+    const data = await res.json();
+    typingEl.remove();
+
+    if (data.error) {
+      addBubble(`⚠️ Error: ${data.error.message}`, 'bot');
+      history.pop();
+    } else {
+      const reply = data.content?.[0]?.text || 'Sorry, I couldn\'t generate a response.';
+      history.push({ role: 'assistant', content: reply });
+      addBubble(formatReply(reply), 'bot', true);
+    }
+  } catch (err) {
+    typingEl.remove();
+    addBubble('Connection error — please refresh and try again.', 'bot');
+    history.pop();
+  }
+
+  isLoading = false;
+  document.getElementById('send-btn').disabled = false;
+  document.getElementById('chat-input').focus();
+}
+
+init();
+</script>
+</body>
+</html>
